@@ -13,7 +13,7 @@ public interface IAuthRepository
     Task<bool> AddUser(UserEntity user);
 }
 
-public class AuthRepository(AuthWithJwtContext dbContext)
+public class AuthRepository(AuthWithJwtContext dbContext) : IAuthRepository
 {
     public Task<UserEntity?> GetUserByLogin(string email)
     {
