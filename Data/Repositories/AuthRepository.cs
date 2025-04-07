@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data.Constants;
+using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
@@ -48,6 +49,13 @@ public class AuthRepository(AuthWithJwtContext dbContext)
     {
         var userExists = await dbContext.Users.AnyAsync(n => n.Email == user.Email);
         if (userExists) return false;
+        
+        // generate salt 
+        var salt = PasswordManager.GenerateSalt();
+        // encrypt password
+        var encryptedPassword = PasswordManager.Encrypt(user.PasswordHash!, salt);
+        user.PasswordHash = encryptedPassword;
+        
         await dbContext.Users.AddAsync(user);
         await dbContext.SaveChangesAsync();
         return true;

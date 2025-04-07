@@ -4,5 +4,5 @@ namespace Data.Entities;
 
 public class UserEntity : IdentityUser
 {
-    
+    public string Salt { get; set; } = string.Empty;
 }

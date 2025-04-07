@@ -35,9 +35,8 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             TokenExpired = DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds(),
             RefreshTokenExpired = DateTimeOffset.UtcNow.AddMinutes(24 * 60).ToUnixTimeSeconds()
         });
-
     }
-
+    
     [HttpPost("refresh")]
     public async Task<ActionResult<LoginResponseDto?>> Refresh(string refreshRequest)
     {
@@ -61,8 +60,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
             RefreshTokenExpired = DateTimeOffset.UtcNow.AddMinutes(24 * 60).ToUnixTimeSeconds()
         });
     }
-
-    [Authorize]
+    
     [HttpPost("register")]
     public async Task<ActionResult> Register([FromBody] RegisterUserDto? registerUser)
     {
@@ -73,8 +71,7 @@ public class AuthController(IAuthService authService, IConfiguration configurati
         if (result) return Ok();
         return BadRequest();
     }
-
-
+    
     private string GenerateToken(string email, bool isRefreshToken)
     {
         var claims = new List<Claim>

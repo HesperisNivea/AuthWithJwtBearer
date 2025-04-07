@@ -1,4 +1,5 @@
 ﻿using AuthWithJwtBearer.Dtos;
+using Data.Constants;
 using Data.Entities;
 using Data.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -21,9 +22,11 @@ public class AuthService(IAuthRepository authRepository) : IAuthService
     public async Task<UserEntity?> GetUserByLogin(string email, string password)
     {
         var user = await authRepository.GetUserByLogin(email);
-        if (user != null && _passwordHasher.VerifyHashedPassword(null, user.PasswordHash, password) ==
-            PasswordVerificationResult.Success) return user;
-        return null;
+        if (user == null) return null;
+        
+        var isValidPassword = PasswordManager.ValidateEncryption(password, user.Salt, user.PasswordHash!);
+        if (!isValidPassword) return null;
+        return user;
     }
 
     public async Task AddRefreshToken(RefreshTokenEntity refreshTokenEntity)
@@ -43,7 +46,7 @@ public class AuthService(IAuthRepository authRepository) : IAuthService
         {
             Email = newUser.Email,
             UserName = newUser.Username,
-            PasswordHash = _passwordHasher.HashPassword(null, newUser.Password)
+            PasswordHash = newUser.Password
         };
         return await authRepository.AddUser(user);
     }
