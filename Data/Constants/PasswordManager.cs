@@ -12,6 +12,7 @@ public static class PasswordManager
     private static int MinimumUpperCaseChars { get; }
     private static int MinimumNumericChars { get; }
     private static int MinimumSpecialChars { get; }
+    private static string AllSpecialChars { get; }
 
     static PasswordManager()
     {
@@ -21,6 +22,7 @@ public static class PasswordManager
         MinimumUpperCaseChars = 2;
         MinimumNumericChars = 2;
         MinimumSpecialChars = 2;
+        AllSpecialChars = "!@#$%&_+?*-";
     }
 
     public static string GenerateSalt()
@@ -51,6 +53,17 @@ public static class PasswordManager
             return false;
         
         return true;
+    }
+
+    public static bool ValidatePasswordAgainstPolicy(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password)) return false;
+
+        return password.Length >= MinimumLengthPassword &&
+               password.Count(char.IsUpper) >= MinimumUpperCaseChars &&
+               password.Count(char.IsLower) >= MinimumLowerCaseChars &&
+               password.Count(char.IsDigit) >= MinimumNumericChars &&
+               password.Count(ch => AllSpecialChars.Contains(ch)) >= MinimumSpecialChars;
     }
     
 }

@@ -47,9 +47,12 @@ public class AuthRepository(AuthWithJwtContext dbContext)
 
     public async Task<bool> AddUser(UserEntity user)
     {
+        // check if password is valid
+        var isValidPassword = PasswordManager.ValidatePasswordAgainstPolicy(user.PasswordHash!);
+        if (!isValidPassword) return false;
+        
         var userExists = await dbContext.Users.AnyAsync(n => n.Email == user.Email);
         if (userExists) return false;
-        
         // generate salt 
         var salt = PasswordManager.GenerateSalt();
         // encrypt password
